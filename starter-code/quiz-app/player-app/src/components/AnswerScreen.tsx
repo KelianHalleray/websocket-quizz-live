@@ -38,14 +38,38 @@ function AnswerScreen({ question, remaining, onAnswer, hasAnswered }: AnswerScre
 
   const handleClick = (index: number) => {
     // TODO: Appeler onAnswer(index)
+    onAnswer(index);
     // TODO: Optionnel : sauvegarder l'index selectionne pour le style .selected
   }
 
   return (
     <div className="answer-screen">
       {/* TODO: Timer avec .answer-timer (+ .warning / .danger selon remaining) */}
+      <div className={`answer-timer ${remaining <= 3 ? 'danger' : remaining <= 10 ? 'warning' : ''}`}>
+        {remaining}
+      </div>
       {/* TODO: Texte de la question avec .answer-question */}
+      <div className='answer-question'>
+        {question.text}
+      </div>
       {/* TODO: Grille de 4 boutons avec .answer-grid et .answer-btn */}
+      <div className="answer-grid">
+        {question.choices.map((choice, index) => (
+          <button
+            key={index}
+            className="answer-btn"
+            disabled={hasAnswered}
+            onClick={() => handleClick(index)}
+          >
+            {choice}
+          </button>
+        ))}
+      </div>
+      {hasAnswered && (
+        <div className='answered-message'>
+          Reponse envoyee
+        </div>
+      )}
       {/* TODO: Message "Reponse envoyee !" si hasAnswered */}
     </div>
   )
