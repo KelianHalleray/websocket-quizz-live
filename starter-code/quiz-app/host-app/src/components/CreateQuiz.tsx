@@ -3,12 +3,17 @@
 // A IMPLEMENTER : construire le formulaire dynamique
 // ============================================================
 
+
+import React from 'react'
 import { useState } from 'react'
+
 import type { QuizQuestion } from '@shared/index'
 
 interface CreateQuizProps {
   /** Callback appele quand le formulaire est soumis */
   onSubmit: (title: string, questions: QuizQuestion[]) => void
+  /** Desactive le formulaire (ex: WebSocket deconnecte) */
+  disabled?: boolean
 }
 function CreateQuiz({ onSubmit }: CreateQuizProps) {
   const [title, setTitle] = useState('')
@@ -124,7 +129,7 @@ function CreateQuiz({ onSubmit }: CreateQuizProps) {
         <button
           type="button"
           className="btn-add-question"
-          onClick={AddQuestion}
+          onClick={addQuestion}
         >
           Ajouter une question
         </button>

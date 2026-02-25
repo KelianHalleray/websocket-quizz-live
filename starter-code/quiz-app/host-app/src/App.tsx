@@ -1,6 +1,6 @@
 // ============================================================
 // Host App - Composant principal
-// A IMPLEMENTER : gestion des messages et routage par phase
+// Gestion des messages, routage par phase, et logique status/phase
 // ============================================================
 
 import { useState, useEffect } from 'react'
@@ -13,6 +13,11 @@ import Results from './components/Results'
 import Leaderboard from './components/Leaderboard'
 
 const WS_URL = 'ws://localhost:3001'
+
+/** Indique si une action WebSocket peut etre effectuee (connexion etablie) */
+function canPerformAction(status: string): boolean {
+  return status === 'connected'
+}
 
 function App() {
   const { status, sendMessage, lastMessage } = useWebSocket(WS_URL)
@@ -34,55 +39,106 @@ function App() {
   useEffect(() => {
     if (!lastMessage) return
 
-    // TODO: Traiter chaque type de message du serveur
-    // Utiliser un switch sur lastMessage.type
-
     switch (lastMessage.type) {
       case 'sync': {
-        // TODO: Quand le serveur envoie un sync (apres host:create),
-        // extraire le quizCode de lastMessage.data et mettre a jour l'etat
-        // Changer la phase vers lastMessage.phase
+        // Reconnexion / synchronisation : reconstituer tout l'etat depuis les donnees serveur
+        const { phase: syncPhase, data } = lastMessage
+        setPhase(syncPhase)
+
+        if (data && typeof data === 'object') {
+          const d = data as Record<string, unknown>
+
+          if (typeof d.quizCode === 'string') setQuizCode(d.quizCode)
+
+          if (Array.isArray(d.players)) {
+            setPlayers(d.players as string[])
+          } else if (syncPhase === 'lobby') {
+            setPlayers([])
+          }
+
+          // Phase question : question courante, timer, index
+          if (syncPhase === 'question' && d.question && typeof d.question === 'object') {
+            const q = d.question as Omit<QuizQuestion, 'correctIndex'>
+            setCurrentQuestion(q)
+            if (typeof d.index === 'number') setQuestionIndex(d.index)
+            if (typeof d.total === 'number') setQuestionTotal(d.total)
+            if (typeof d.remaining === 'number') setRemaining(d.remaining)
+            setAnswerCount(0)
+            setCorrectIndex(-1)
+            setDistribution([])
+          }
+
+          // Phase results : distribution, bonne reponse
+          if (syncPhase === 'results') {
+            if (Array.isArray(d.distribution)) setDistribution(d.distribution as number[])
+            if (typeof d.correctIndex === 'number') setCorrectIndex(d.correctIndex)
+            const totalAnswers = Array.isArray(d.distribution)
+              ? (d.distribution as number[]).reduce((sum, n) => sum + n, 0)
+              : 0
+            setAnswerCount(totalAnswers)
+            if (d.question && typeof d.question === 'object') {
+              setCurrentQuestion(d.question as Omit<QuizQuestion, 'correctIndex'>)
+            }
+          }
+
+          // Phase leaderboard : classement
+          if (syncPhase === 'leaderboard' && Array.isArray(d.rankings)) {
+            setRankings(
+              (d.rankings as { name?: string; score?: number }[]).map((r) => ({
+                name: r.name ?? '',
+                score: r.score ?? 0
+              }))
+            )
+          }
+        }
         break
       }
 
       case 'joined': {
-        // TODO: Mettre a jour la liste des joueurs avec lastMessage.players
+        setPlayers(lastMessage.players)
         break
       }
 
       case 'question': {
-        // TODO: Mettre a jour currentQuestion, questionIndex, questionTotal
-        // TODO: Initialiser remaining avec la duree du timer de la question
-        // TODO: Reinitialiser answerCount a 0
-        // TODO: Changer la phase en 'question'
+        setCurrentQuestion(lastMessage.question)
+        setQuestionIndex(lastMessage.index)
+        setQuestionTotal(lastMessage.total)
+        setRemaining(lastMessage.question.timerSec)
+        setAnswerCount(0)
+        setCorrectIndex(-1)
+        setDistribution([])
+        setPhase('question')
         break
       }
 
       case 'tick': {
-        // TODO: Mettre a jour remaining avec lastMessage.remaining
+        setRemaining(lastMessage.remaining)
         break
       }
 
       case 'results': {
-        // TODO: Mettre a jour correctIndex, distribution
-        // TODO: Calculer answerCount (somme de distribution)
-        // TODO: Changer la phase en 'results'
+        setCorrectIndex(lastMessage.correctIndex)
+        setDistribution(lastMessage.distribution)
+        const totalAnswers = lastMessage.distribution.reduce((sum, n) => sum + n, 0)
+        setAnswerCount(totalAnswers)
+        setPhase('results')
         break
       }
 
       case 'leaderboard': {
-        // TODO: Mettre a jour rankings avec lastMessage.rankings
-        // TODO: Changer la phase en 'leaderboard'
+        setRankings(lastMessage.rankings)
+        setPhase('leaderboard')
         break
       }
 
       case 'ended': {
-        // TODO: Changer la phase en 'ended'
+        setPhase('ended')
         break
       }
 
       case 'error': {
-        // TODO: Afficher l'erreur (console.error ou alert)
+        console.error(lastMessage.message)
+        alert(lastMessage.message)
         break
       }
     }
@@ -92,24 +148,46 @@ function App() {
 
   /** Appele quand le host soumet le formulaire de creation */
   const handleCreateQuiz = (title: string, questions: QuizQuestion[]) => {
-    // TODO: Envoyer un message 'host:create' au serveur avec sendMessage
+    sendMessage({ type: 'host:create', title, questions })
   }
 
   /** Appele quand le host clique sur "Demarrer" dans le lobby */
   const handleStart = () => {
-    // TODO: Envoyer un message 'host:start' au serveur
+    sendMessage({ type: 'host:start' })
   }
 
   /** Appele quand le host clique sur "Question suivante" */
   const handleNext = () => {
-    // TODO: Envoyer un message 'host:next' au serveur
+    sendMessage({ type: 'host:next' })
   }
+
+  /** Appele quand le host clique sur "Terminer le quiz" (phase leaderboard) */
+  const handleEnd = () => {
+    sendMessage({ type: 'host:end' })
+  }
+
+  /** Reinitialise l'etat et revient au formulaire de creation */
+  const handleBackToCreate = () => {
+    setPhase('create')
+    setQuizCode('')
+    setPlayers([])
+    setCurrentQuestion(null)
+    setQuestionIndex(0)
+    setQuestionTotal(0)
+    setRemaining(0)
+    setAnswerCount(0)
+    setCorrectIndex(-1)
+    setDistribution([])
+    setRankings([])
+  }
+
+  const canAct = canPerformAction(status)
 
   // --- Rendu par phase ---
   const renderPhase = () => {
     switch (phase) {
       case 'create':
-        return <CreateQuiz onSubmit={handleCreateQuiz} />
+        return <CreateQuiz onSubmit={handleCreateQuiz} disabled={!canAct} />
 
       case 'lobby':
         return (
@@ -117,6 +195,7 @@ function App() {
             quizCode={quizCode}
             players={players}
             onStart={handleStart}
+            startDisabled={!canAct || players.length === 0}
           />
         )
 
@@ -139,17 +218,24 @@ function App() {
             distribution={distribution}
             choices={currentQuestion.choices}
             onNext={handleNext}
+            nextDisabled={!canAct}
           />
         ) : null
 
       case 'leaderboard':
-        return <Leaderboard rankings={rankings} />
+        return (
+          <Leaderboard
+            rankings={rankings}
+            onEnd={handleEnd}
+            endDisabled={!canAct}
+          />
+        )
 
       case 'ended':
         return (
           <div className="phase-container">
             <h1>Quiz termine !</h1>
-            <button className="btn-primary" onClick={() => setPhase('create')}>
+            <button className="btn-primary" onClick={handleBackToCreate}>
               Creer un nouveau quiz
             </button>
           </div>
