@@ -63,7 +63,6 @@ function App() {
         // TODO: Initialiser remaining avec la duree du timer de la question
         // TODO: Reinitialiser answerCount a 0
         // TODO: Changer la phase en 'question'
-        break
       }
 
       case 'tick': {
@@ -80,7 +79,6 @@ function App() {
         // TODO: Mettre a jour correctIndex, distribution
         // TODO: Calculer answerCount (somme de distribution)
         // TODO: Changer la phase en 'results'
-        break
       }
 
       case 'leaderboard': {

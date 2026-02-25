@@ -7,7 +7,6 @@ interface LeaderboardProps {
   /** Classement trie par score decroissant */
   rankings: { name: string; score: number }[]
 }
-const  classementsMock: LeaderboardProps = {
 
 /**
  * Composant affichant le classement des joueurs.
@@ -23,6 +22,9 @@ const  classementsMock: LeaderboardProps = {
  *
  * Note : les rankings sont deja tries par score decroissant
  */
+
+
+
 function Leaderboard({ rankings }: LeaderboardProps) {
   return (
     <div className="phase-container">
@@ -31,12 +33,13 @@ function Leaderboard({ rankings }: LeaderboardProps) {
       <div className="leaderboard">
 
         {rankings.map((player, index) => (
-          <div key={player} 'leaderboard-item'>
-            <p>Rank : {index + 1}</p>
-            <p>Name : {player.name}</p>
-            <p>Score : {player.score}</p>
-          </div>
-          
+          <li key={`${player.name}-${index}`} className="leaderboard-item">
+            <span className="leaderboard-rank">{index + 1}</span>
+            <span className="leaderboard-name">{player.name}</span>
+            <span className="leaderboard-score">{player.score}</span>
+          </li>
+        ))}
+        
         {/* TODO: Pour chaque joueur dans rankings, afficher un .leaderboard-item */}
         {/* TODO: Afficher rang, nom et score */}
       </div>
