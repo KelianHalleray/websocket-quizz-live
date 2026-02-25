@@ -244,13 +244,8 @@ export class QuizRoom {
     // TODO: Recuperer la question courante
     const question = this.questions[this.currentQuestionIndex]
     // TODO: Calculer la distribution des reponses
-    const distribution = question.choices.map((_, i) => 
-      [...this.answers.values()].filter((ci) => ci === i).length)
-    // TODO: Construire l'objet scores { nom: score }
-    const scores = Array.from(this.players.values()).reduce((acc, player) => {
-      acc[player.name] = this.scores.get(player.id) || 0
-      return acc
-    }, {} as Record<string, number>)
+    const distribution = Array(question.choices.length).fill(0)
+    const scores = Object.fromEntries(this.scores.entries()) as Record<string, number>
     // TODO: Envoyer 'results' a tous
     this.broadcastToAll({
       type: 'results',
