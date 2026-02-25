@@ -20,7 +20,7 @@ function App() {
   // --- Etats de l'application ---
   const [phase, setPhase] = useState<QuizPhase | 'join' | 'feedback'>('join')
   const [playerName, setPlayerName] = useState('')
-  const [playerId, setPlayerdId] = useState<string | null>(null)
+  const [playerId, setPlayerId] = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [players, setPlayers] = useState<string[]>([])
   const [currentQuestion, setCurrentQuestion] = useState<Omit<QuizQuestion, 'correctIndex'> | null>(null)
@@ -41,7 +41,7 @@ function App() {
     switch (lastMessage.type) {
       case 'joined': {
         // TODO: Mettre a jour la liste des joueurs
-        setPlayerdId(lastMessage.playerId);
+        setPlayerId(lastMessage.playerId);
         setPlayers(lastMessage.players);
         // TODO: Passer en phase 'lobby'
         setPhase('lobby');
