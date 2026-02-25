@@ -6,6 +6,10 @@
 interface LeaderboardProps {
   /** Classement trie par score decroissant */
   rankings: { name: string; score: number }[]
+  /** Callback quand le host clique sur "Terminer le quiz" */
+  onEnd?: () => void
+  /** Desactive le bouton (ex: WebSocket deconnecte) */
+  endDisabled?: boolean
 }
 
 /**
@@ -43,6 +47,16 @@ function Leaderboard({ rankings }: LeaderboardProps) {
         {/* TODO: Pour chaque joueur dans rankings, afficher un .leaderboard-item */}
         {/* TODO: Afficher rang, nom et score */}
       </div>
+      {onEnd && (
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={onEnd}
+          disabled={endDisabled}
+        >
+          Terminer le quiz
+        </button>
+      )}
     </div>
   )
 }

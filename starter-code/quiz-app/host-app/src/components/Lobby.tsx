@@ -10,6 +10,8 @@ interface LobbyProps {
   players: string[]
   /** Callback quand le host clique sur "Demarrer" */
   onStart: () => void
+  /** Desactive le bouton Demarrer (ex: WebSocket deconnecte ou aucun joueur) */
+  startDisabled?: boolean
 }
 
 /**
@@ -25,7 +27,7 @@ interface LobbyProps {
  * Classes CSS disponibles : .phase-container, .quiz-code-label, .quiz-code,
  * .player-count, .player-list, .player-chip, .btn-start
  */
-function Lobby({ quizCode, players, onStart }: LobbyProps) {
+function Lobby({ quizCode, players, onStart, startDisabled = false }: LobbyProps) {
   return (
     <div className="phase-container">
       <label htmlFor="quiz-code" className="quiz-code-label">Code du quiz</label>

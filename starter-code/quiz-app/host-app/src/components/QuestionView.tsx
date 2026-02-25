@@ -35,6 +35,8 @@ interface QuestionViewProps {
  * (c'est purement visuel pour projeter au mur)
  */
 function QuestionView({ question, index, total, remaining, answerCount, totalPlayers }: QuestionViewProps) {
+  const timerClass =
+    remaining <= 3 ? 'danger' : remaining <= 10 ? 'warning' : ''
   return (
     <div className="phase-container">
       <div className="question-header">Question {index + 1} / {total}</div>

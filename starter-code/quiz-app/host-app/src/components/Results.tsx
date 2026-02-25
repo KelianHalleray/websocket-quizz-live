@@ -7,6 +7,8 @@ interface ResultsProps {
   distribution: number[]
   choices: string[]
   onNext: () => void
+  /** Desactive le bouton (ex: WebSocket deconnecte) */
+  nextDisabled?: boolean
 }
 
 function Results({ correctIndex, distribution, choices, onNext }: ResultsProps) {

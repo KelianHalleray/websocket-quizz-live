@@ -12,6 +12,8 @@ import type { QuizQuestion } from '@shared/index'
 interface CreateQuizProps {
   /** Callback appele quand le formulaire est soumis */
   onSubmit: (title: string, questions: QuizQuestion[]) => void
+  /** Desactive le formulaire (ex: WebSocket deconnecte) */
+  disabled?: boolean
 }
 function CreateQuiz({ onSubmit }: CreateQuizProps) {
   const [title, setTitle] = useState('')
