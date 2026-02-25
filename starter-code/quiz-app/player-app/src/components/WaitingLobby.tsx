@@ -23,8 +23,17 @@ function WaitingLobby({ players }: WaitingLobbyProps) {
   return (
     <div className="phase-container waiting-container">
       {/* TODO: Message "En attente du host..." avec .waiting-message */}
+      <p className="waiting-message">En attente du host...</p>
       {/* TODO: Nombre de joueurs */}
+      <p>
+        {`Joueur connecté(s): ${players.length}`}
+      </p>
       {/* TODO: Liste des joueurs avec .player-list et .player-chip */}
+      <ul className="player-list">
+        {players.map((player) =>
+        <li key={player} className="player-chip">{player}</li>
+        )}
+      </ul>
     </div>
   )
 }
