@@ -39,25 +39,25 @@ function QuestionView({ question, index, total, remaining, answerCount, totalPla
     remaining <= 3 ? 'danger' : remaining <= 10 ? 'warning' : ''
   return (
     <div className="phase-container">
-      <div className="question-header">
-        Question {index + 1} / {total}
+      <div className="question-header">Question {index + 1} / {total}</div>
+      <div className={`countdown ${remaining <= 3 ? 'danger' : remaining <= 10 ? 'warning' : ''}`}>
+        <div className="countdown-circle">{remaining}</div>
       </div>
-      <div className={`countdown countdown-circle ${timerClass}`}>
-        {remaining}
-      </div>
-      <p className="question-text">{question.text}</p>
+      <div className="question-text">{question.text}</div>
       <div className="choices-grid">
         {question.choices.map((choice, i) => (
-          <div key={i} className="choice-card">
-            {choice}
-          </div>
+          <div key={i} className="choice-card">{choice}</div>
         ))}
       </div>
-      <p className="answer-counter">
-        {answerCount} / {totalPlayers} reponses
-      </p>
+      <div className="answer-counter">{answerCount} / {totalPlayers} reponses</div>
     </div>
+    /* TODO: En-tete "Question {index + 1} / {total}" */
+    /* TODO: Timer avec .countdown-circle (+ .warning / .danger selon remaining) */
+    /* TODO: Texte de la question avec .question-text */
+    /* TODO: Grille des 4 choix avec .choices-grid et .choice-card */
+    /* TODO: Compteur "{answerCount} / {totalPlayers} reponses" */
   )
 }
 
 export default QuestionView
+
