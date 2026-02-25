@@ -3,7 +3,10 @@
 // A IMPLEMENTER : construire le formulaire dynamique
 // ============================================================
 
+
+import React from 'react'
 import { useState } from 'react'
+
 import type { QuizQuestion } from '@shared/index'
 
 interface CreateQuizProps {
@@ -124,7 +127,7 @@ function CreateQuiz({ onSubmit }: CreateQuizProps) {
         <button
           type="button"
           className="btn-add-question"
-          onClick={AddQuestion}
+          onClick={addQuestion}
         >
           Ajouter une question
         </button>

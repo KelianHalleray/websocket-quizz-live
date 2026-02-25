@@ -51,6 +51,14 @@ function App() {
       }
 
       case 'question': {
+         setCurrentQuestion(lastMessage.question)
+        setQuestionIndex(lastMessage.index)
+        setQuestionTotal(lastMessage.total)
+        setRemaining(lastMessage.duration)
+        setAnswerCount(0)
+        setPhase('question')
+        break
+
         // TODO: Mettre a jour currentQuestion, questionIndex, questionTotal
         // TODO: Initialiser remaining avec la duree du timer de la question
         // TODO: Reinitialiser answerCount a 0
@@ -64,6 +72,11 @@ function App() {
       }
 
       case 'results': {
+        setCorrectIndex(lastMessage.correctIndex)
+        setDistribution(lastMessage.distribution)
+        setPhase('results')
+        break
+
         // TODO: Mettre a jour correctIndex, distribution
         // TODO: Calculer answerCount (somme de distribution)
         // TODO: Changer la phase en 'results'
@@ -72,7 +85,8 @@ function App() {
 
       case 'leaderboard': {
         // TODO: Mettre a jour rankings avec lastMessage.rankings
-        // TODO: Changer la phase en 'leaderboard'
+        setRankings(lastMessage.rankings)
+        setPhase('leaderboard')
         break
       }
 
