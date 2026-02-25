@@ -12,6 +12,8 @@ interface ResultsProps {
   choices: string[]
   /** Callback quand le host clique sur "Question suivante" */
   onNext: () => void
+  /** Desactive le bouton (ex: WebSocket deconnecte) */
+  nextDisabled?: boolean
 }
 
 /**
@@ -29,16 +31,36 @@ interface ResultsProps {
  *
  * Astuce : const maxCount = Math.max(...distribution, 1)
  */
-function Results({ correctIndex, distribution, choices, onNext }: ResultsProps) {
+function Results({ correctIndex, distribution, choices, onNext, nextDisabled = false }: ResultsProps) {
+  const maxCount = Math.max(...distribution, 1)
   return (
     <div className="phase-container">
       <div className="results-container">
         <h1>Resultats</h1>
-        {/* TODO: Pour chaque choix, afficher une barre de resultat */}
-        {/* TODO: Utiliser .result-bar.correct pour la bonne reponse */}
-        {/* TODO: Calculer la largeur proportionnelle de chaque barre */}
-        {/* TODO: Afficher le nombre de reponses dans chaque barre */}
-        {/* TODO: Bouton "Question suivante" */}
+        {choices.map((choice, i) => (
+          <div key={i} className="result-bar-container">
+            <span className="result-bar-label">
+              {choice}
+              {i === correctIndex && <span className="correct-label"> (Bonne reponse)</span>}
+            </span>
+            <div className="result-bar-wrapper">
+              <div
+                className={`result-bar ${i === correctIndex ? 'correct' : 'incorrect'}`}
+                style={{ width: `${(distribution[i] ?? 0) / maxCount * 100}%` }}
+              >
+                {distribution[i] ?? 0}
+              </div>
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={onNext}
+          disabled={nextDisabled}
+        >
+          Question suivante
+        </button>
       </div>
     </div>
   )
