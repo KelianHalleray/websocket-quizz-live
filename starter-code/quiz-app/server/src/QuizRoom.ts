@@ -78,7 +78,7 @@ export class QuizRoom {
     // TODO: Initialiser le score a 0
     this.scores.set(playerID, 0)
     // TODO: Envoyer 'joined' a tous les clients
-    broadcast(this.getPlayerWsList(), {
+    this.broadcastToAll({
       type: 'joined',
       playerId: playerID,
       players: Array.from(this.players.values()).map((player) => player.name)
