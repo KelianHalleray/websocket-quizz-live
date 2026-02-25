@@ -6,6 +6,7 @@
     "dev": "ts-node src/index.ts"
   },
   "dependencies": {
+    "websocket-quizz-live": "file:../../..",
     "ws": "^8.16.0"
   },
   "devDependencies": {

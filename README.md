@@ -12,3 +12,16 @@
 
 ## Server
 - Yann N'da → Développement du server
+
+
+# Lancement du projet
+
+##  Démarrage complet
+
+Depuis la racine du projet :
+
+```bash
+npm run dev
+```
+
+Les ports accessibles dans le navigateur sont les suivants : Host - **:5173** | Player - **:5174** en localhost

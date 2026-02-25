@@ -1,0 +1,22 @@
+{
+  "name": "websocket-quizz-live",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Le Live Quiz est une application temps réel type Kahoot développée en WebSocket, React et TypeScript...",
+  "scripts": {
+    "install:host": "npm --prefix starter-code/quiz-app/host-app install",
+    "install:player": "npm --prefix starter-code/quiz-app/player-app install",
+    "install:server": "npm --prefix starter-code/quiz-app/server install",
+    "install:all": "npm run install:server && npm run install:host && npm run install:player",
+
+    "host": "npm --prefix starter-code/quiz-app/host-app run dev",
+    "player": "npm --prefix starter-code/quiz-app/player-app run dev",
+    "server": "npm --prefix starter-code/quiz-app/server run dev",
+
+    "dev": "npm run install:all && concurrently -k \"npm run server\" \"npm run host\" \"npm run player\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "license": "ISC"
+}
