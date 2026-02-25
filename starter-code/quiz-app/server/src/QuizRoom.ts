@@ -153,7 +153,7 @@ export class QuizRoom {
     const isCorrectAnswer = choiceIndex === this.questions[this.currentQuestionIndex].correctIndex
     if (isCorrectAnswer) {
       const score = 1000 + Math.round(500 * (this.remaining / this.questions[this.currentQuestionIndex].timerSec))
-      this.scores.set(playerId, score)
+      this.scores.set(playerId, (this.scores.get(playerId) || 0) + score)
     }
     // TODO: Si tout le monde a repondu, terminer la question
     if (this.answers.size === this.players.size) {
@@ -244,7 +244,8 @@ export class QuizRoom {
     // TODO: Recuperer la question courante
     const question = this.questions[this.currentQuestionIndex]
     // TODO: Calculer la distribution des reponses
-    const distribution = question.choices.map((choice) => this.answers.get(choice) || 0)
+    const distribution = question.choices.map((_, i) => 
+      [...this.answers.values()].filter((ci) => ci === i).length)
     // TODO: Construire l'objet scores { nom: score }
     const scores = Array.from(this.players.values()).reduce((acc, player) => {
       acc[player.name] = this.scores.get(player.id) || 0
